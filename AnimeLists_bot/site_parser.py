@@ -1,7 +1,13 @@
 import requests
 from bs4 import BeautifulStoneSoup as BS
 
+amine_url_lib = { 
+    'jutsu' : 'https://jut.su/anime/'
+    }
+
+# Класс для парса jut.su
 class jutsu(object):
+    # Данные для загрузки сайта
     cookies = {
         '_ym_uid': '167887747395825577',
         '_ym_d': '1678877473',
@@ -30,17 +36,20 @@ class jutsu(object):
         'anime_of_user': '',
     }
 
+    # Поиск Аниме на сайте по имени
     @classmethod
-    def find_amime(cls, name: str) -> list[str]:
-        anime_list = []
+    def find_amime(cls, name: str) -> dict[str:str]:
+        anime_list = dict()
 
         cls.data['show_search'] = name
 
         jut_su = requests.post('https://jut.su/anime/', cookies=cls.cookies, headers=cls.headers, data=cls.data)
         jut_su_soup = BS(jut_su.content, features='lxml')
         
-        for var1 in jut_su_soup.select('div.aaname'):
-            anime_list.append(var1.text)
+        for i, var1 in enumerate(jut_su_soup.select('a.tooltip_title_in_anime')):
+            anime_list[var1.text] = var1["href"]
+
+        
 
         return anime_list
     
