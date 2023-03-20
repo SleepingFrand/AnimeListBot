@@ -1,5 +1,6 @@
 stages:
     install
+    debug
 
 variables:
     GIT_BRN: master
