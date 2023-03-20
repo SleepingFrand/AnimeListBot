@@ -1,5 +1,5 @@
 variables:
-  IMAGE_TAG: AnLis:$CI_COMMIT_REF_SLUG
+  IMAGE_TAG: anlis:$CI_COMMIT_REF_SLUG
   DOCKER_TLS_CERTDIR: "/certs"
 
 build-push-docker-image-job:
