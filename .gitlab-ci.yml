@@ -1,20 +1,12 @@
-stages:
-    - build
-    - install
-
 variables:
-    GIT_BRN: master
-    KUBECTL_IMAGE: bitnami/kubectl:latest
+  IMAGE_TAG: AnLis:$CI_COMMIT_REF_SLUG
+  DOCKER_TLS_CERTDIR: "/certs"
 
-build_jobe:
-    stage: build
-    before_script:
-        - docker info
-    script:
-        - docker build --tag AmLis_bot:v0.1 AnimeLists_bot/.
-
-install_jobe:
-    stage: install
-    image: ${KUBECTL_IMAGE}
-    script:
-        - kubectl -aplly ./animelists/'Kubernetes manifest '/deploymet.yaml
+build-push-docker-image-job:
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $IMAGE_TAG ./AnimeLists_bot/
+    - docker push $IMAGE_TAG
