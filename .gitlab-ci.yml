@@ -1,4 +1,5 @@
 stages:
+    - build
     - install
 
 variables:
@@ -6,7 +7,7 @@ variables:
     KUBECTL_IMAGE: atlassian/pipelines-kubectl:latest
 
 build_jobe:
-    stage: install
+    stage: build
     image: docker
     script:
         - docker build --tag AmLis_bot:v0.1 AnimeLists_bot/.
