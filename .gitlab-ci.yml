@@ -1,8 +1,13 @@
+states:
+  - push
+  - install
+
 variables:
   IMAGE_TAG: sleepingfrand/anlis:$CI_COMMIT_REF_SLUG
   DOCKER_TLS_CERTDIR: "/certs"
 
 build-push-docker-image-job:
+  state: push
   image: docker:latest
   services:
     - docker:dind
@@ -10,3 +15,9 @@ build-push-docker-image-job:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
     - docker build -t $IMAGE_TAG ./AnimeLists_bot/
     - docker push $IMAGE_TAG
+
+install-job:
+  state: install
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl apply -f ./Kubernetes_manifest/deploymet.yaml
