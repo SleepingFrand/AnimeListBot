@@ -1,0 +1,15 @@
+stages:
+    install
+
+variables:
+    GIT_BRN: master
+    GIT_URL: http://10.125.4.42/Deniska/animelists.git
+    KUBECTL_IMAGE: atlassian/pipelines-kubectl:latest
+
+install_jobe:
+    stage: install
+    image: ${KUBECTL_IMAGE}
+    script:
+        - git clone --branch=${GIT_BRN} ${GIT_URL}
+        - docker build --tag AmLis_bot:v0.1 ./animelists/AnimeLists_bot/.
+        - kubectl -aplly ./animelists/'Kubernetes manifest '/deploymet.yaml
