@@ -4,7 +4,7 @@ stages:
 
 variables:
     GIT_BRN: master
-    KUBECTL_IMAGE: atlassian/pipelines-kubectl:latest
+    KUBECTL_IMAGE: bitnami/kubectl:latest
 
 build_jobe:
     stage: build
