@@ -12,7 +12,7 @@ url = amine_url_lib['jutsu']
 ####################__ФАЙЛЫ__#######################
 
 # Считываем файл с помощью -> /help
-file_help = open('help.txt', 'r')
+file_help = open('Files/help.txt', 'r')
 help_text = file_help.read()
 file_help.close()
 
