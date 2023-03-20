@@ -14,4 +14,5 @@ build_jobe:
 install_jobe:
     stage: install
     image: ${KUBECTL_IMAGE}
+    script:
         - kubectl -aplly ./animelists/'Kubernetes manifest '/deploymet.yaml
