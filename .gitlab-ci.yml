@@ -8,7 +8,8 @@ variables:
 
 build_jobe:
     stage: build
-    image: docker/build-push-action
+    before_script:
+        - docker info
     script:
         - docker build --tag AmLis_bot:v0.1 AnimeLists_bot/.
 
