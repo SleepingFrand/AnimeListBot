@@ -8,7 +8,6 @@ variables:
 
 install_jobe:
     stage: install
-    image: ${KUBECTL_IMAGE}
     script:
         - git clone --branch=${GIT_BRN} ${GIT_URL}
         - docker build --tag AmLis_bot:v0.1 ./animelists/AnimeLists_bot/.
