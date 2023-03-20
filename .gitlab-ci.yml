@@ -5,8 +5,13 @@ variables:
     GIT_BRN: master
     KUBECTL_IMAGE: atlassian/pipelines-kubectl:latest
 
-install_jobe:
+build_jobe:
     stage: install
+    image: docker
     script:
         - docker build --tag AmLis_bot:v0.1 AnimeLists_bot/.
+
+install_jobe:
+    stage: install
+    image: ${KUBECTL_IMAGE}
         - kubectl -aplly ./animelists/'Kubernetes manifest '/deploymet.yaml
