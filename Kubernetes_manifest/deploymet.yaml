@@ -12,10 +12,10 @@ spec:
       app: AmineLists
   template:
     metadata:
+      namespace: AmineLists-deployment
       labels:
         app: AmineLists
     spec:
       containers:
       - name: AmineLists
-        namespace: AmineLists-deployment
         image: AmLis_bot:v0.1
