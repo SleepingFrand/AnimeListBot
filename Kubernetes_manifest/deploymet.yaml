@@ -1,21 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: AmineLists-deployment
-  namespace: AmineLists-deployment
-  labels:
-    app: AmineLists
+  name: animelist-deployment
+  namespace: telegram_bat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: AmineLists
+      app: animelist-app
   template:
     metadata:
-      namespace: AmineLists-deployment
       labels:
-        app: AmineLists
+        app: animelist-app
     spec:
       containers:
-      - name: AmineLists
-        image: AmLis_bot:v0.1
+        - name: animelist-container
+          image: sleepingfrand/anlis:v0.1
+          volumeMounts:
+            - name: animelist-volume
+              mountPath: /app/data
+      volumes:
+        - name: animelist-volume
+          persistentVolumeClaim:
+            claimName: animelist-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: animelist-pvc
+  namespace: telegram_bat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
