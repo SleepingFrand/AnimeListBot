@@ -20,4 +20,5 @@ install-job:
   stage: install
   image: bitnami/kubectl:latest
   script:
+    - kubectl delete -f ./Kubernetes_manifest/deploymet.yaml
     - kubectl apply -f ./Kubernetes_manifest/deploymet.yaml
