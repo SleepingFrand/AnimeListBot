@@ -1,8 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: telegram_bot
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: animelist-deployment
-  namespace: telegram_bat
+  namespace: telegram_bot
 spec:
   replicas: 1
   selector:
@@ -28,7 +33,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: animelist-pvc
-  namespace: telegram_bat
+  namespace: telegram_bot
 spec:
   accessModes:
     - ReadWriteOnce
