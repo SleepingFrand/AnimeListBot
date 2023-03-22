@@ -3,6 +3,19 @@ kind: Namespace
 metadata:
   name: telegram_bot
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: animelist-pvc
+  namespace: telegram_bot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,16 +41,3 @@ spec:
         - name: animelist-volume
           persistentVolumeClaim:
             claimName: animelist-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: animelist-pvc
-  namespace: telegram_bot
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: standard
