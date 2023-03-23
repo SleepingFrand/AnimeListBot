@@ -9,7 +9,7 @@ class Anime:
         self.watched = watched
         self.site = site
 
-    # ����������� ������� Anime � JSON
+
     def to_json(self):
         return json.dumps({
             "title": self.title,
@@ -20,20 +20,20 @@ class Anime:
             "site": self.site
         })
 
-    # �������� ������� Anime �� JSON
+
     @classmethod
     def from_json(cls, json_str : str):
         json_dict = json.loads(json_str)
         return cls(title=json_dict['title'], genre=json_dict['genre'], description=json_dict['description'], episodes=json_dict['episodes'], watched=json_dict['watched'], site=json_dict['site'])
 
 class database(object):
-    # ������� ���������� ������ ������������
+    
     @classmethod
     def save_user_data(cls, user_chat_id : str, anime_info : str):
         with open(f'data/{user_chat_id}.json', 'w') as f:
             f.write(anime_info)
     
-    # ������� ������ ������ ������������  
+     
     @classmethod 
     def load_user_data(cls, user_chat_id : str):
         try:
@@ -42,7 +42,7 @@ class database(object):
         except FileNotFoundError:
             return {}
 
-def AnimeListToFile(user_chat_id : int, animelist : list(Anime)):
+def AnimeListToFile(user_chat_id : int, animelist : list[Anime]):
     if not animelist:
         return
     json_str = str()
@@ -50,13 +50,13 @@ def AnimeListToFile(user_chat_id : int, animelist : list(Anime)):
         json_str += f"|{item.to_json()}"
     database.save_user_data(str(user_chat_id), json_str)
 
-def FileToAnimeList(user_chat_id : int) -> list(Anime):
+def FileToAnimeList(user_chat_id : int) -> list[Anime]:
     json_str = database.load_user_data(str(user_chat_id))
     return [Anime.from_json(item) for item in json_str.split('|') if item]
 
-Anime_data = dict[int:list(Anime)]
+Anime_data = dict[int:list[Anime]]
 
-def GetListFromData(user_chat_id : int) -> list(Anime):
+def GetListFromData(user_chat_id : int) -> list[Anime]:
     global Anime_data
 
     if user_chat_id not in Anime_data.keys:
