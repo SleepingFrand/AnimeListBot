@@ -81,7 +81,6 @@ class jutsu(object):
                             break
                         except :
                             pass
-                       
 
         ### ссылка ###
 
