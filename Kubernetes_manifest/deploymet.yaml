@@ -34,6 +34,7 @@ spec:
       containers:
         - name: animelist-container
           image: sleepingfrand/anlis:v0.1
+          imagePullPolicy: Always
           volumeMounts:
             - name: animelist-volume
               mountPath: /app/data
