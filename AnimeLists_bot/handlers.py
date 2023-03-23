@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from config import API_TOKEN_BOT, HELP_TXT, START_TXT
 import json
-from main import Anime, Anime_data
+from utils import Anime, Anime_data
 from site_parser import jutsu
 from site_parser import amine_url_lib
 
