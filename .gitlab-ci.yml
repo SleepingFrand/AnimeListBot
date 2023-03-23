@@ -20,4 +20,4 @@ install-job:
   stage: install
   image: bitnami/kubectl:latest
   script:
-    - kubectl apply -f ./Kubernetes_manifest/deploymet.yaml
+    - kubectl -n telegram-bot delete replicasets -l app=animelist-app
