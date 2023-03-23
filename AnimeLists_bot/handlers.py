@@ -11,5 +11,4 @@ def start(message):
 def help(message):
     bot.send_message(chat_id=message.chat.id, text=HELP_TXT)
 
-# Список обработчиков
-handlers = bot.handlers
+handlers = bot.message_handler
