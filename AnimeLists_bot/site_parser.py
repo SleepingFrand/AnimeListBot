@@ -1,13 +1,16 @@
+ï»¿from ast import Return
 import requests
-from bs4 import BeautifulStoneSoup as BS
+from bs4 import BeautifulSoup  as BS
+from bs4 import Tag, NavigableString
+from utils import Anime
 
 amine_url_lib = { 
     'jutsu' : 'https://jut.su/anime/'
     }
 
-# Êëàññ äëÿ ïàðñà jut.su
+# ÐšÐ»Ð°ÑÑ Ð´Ð»Ñ Ð¿Ð°Ñ€ÑÐ° jut.su
 class jutsu(object):
-    # Äàííûå äëÿ çàãðóçêè ñàéòà
+    # Ð”Ð°Ð½Ð½Ñ‹Ðµ Ð´Ð»Ñ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ ÑÐ°Ð¹Ñ‚Ð°
     cookies = {
         '_ym_uid': '167887747395825577',
         '_ym_d': '1678877473',
@@ -36,7 +39,7 @@ class jutsu(object):
         'anime_of_user': '',
     }
 
-    # Ïîèñê Àíèìå íà ñàéòå ïî èìåíè
+    # ÐŸÐ¾Ð¸ÑÐº ÐÐ½Ð¸Ð¼Ðµ Ð½Ð° ÑÐ°Ð¹Ñ‚Ðµ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
     @classmethod
     def find_amime(cls, name: str) -> dict[str:str]:
         anime_list = dict()
@@ -45,10 +48,66 @@ class jutsu(object):
 
         jut_su = requests.post('https://jut.su/anime/', cookies=cls.cookies, headers=cls.headers, data=cls.data)
         jut_su_soup = BS(jut_su.content, features='lxml')
-        
-        for i, var1 in enumerate(jut_su_soup.select('a.tooltip_title_in_anime')):
-            anime_list[var1.text] = var1["href"]
 
-        
+        for i, var1 in enumerate(jut_su_soup.select('div > a')):
+            anime_list[var1.find('div', class_='aaname').text] = var1["href"]
 
         return anime_list
+
+    @classmethod
+    def info_per_url(cls, short_url: str) -> Anime:
+        anime_info = Anime()
+        
+        jut_su = requests.post('https://jut.su' + short_url, cookies=cls.cookies, headers=cls.headers)
+        jut_su_soup = BS(jut_su.text, features='html.parser')
+
+        ### Ð¸Ð¼Ñ ###
+
+        anime_info.title = jut_su_soup.find('meta', attrs={'property': 'yandex_recommendations_title'})['content']
+
+        ### ÑÐµÑ€Ð¸Ð¸ ###
+
+        cls.data['show_search'] = anime_info.title.replace('-', ' ').replace(':', '')
+
+        episodes_req = requests.post('https://jut.su/anime/', cookies=cls.cookies, headers=cls.headers, data=cls.data)
+        episodes_html = BS(episodes_req.content, features='lxml')
+
+        for var in episodes_html.select('div.aailines'):
+            for i, item in enumerate(var.contents):
+                if type(item) == NavigableString:
+                    if var.contents[i].split()[1][:3] == 'ÑÐµÑ€':
+                        try:
+                            anime_info.episodes = int(var.contents[i].split()[0])
+                            break
+                        except :
+                            pass
+                       
+
+        ### ÑÑÑ‹Ð»ÐºÐ° ###
+
+        anime_info.site = 'https://jut.su' + short_url
+
+        ### Ð¶Ð°Ð½Ñ€Ñ‹ ###
+        genre_html = jut_su_soup.select('#dle-content > div > div > div > div')[0]
+        
+        genre_list = list()
+
+        for item in genre_html.contents:
+            if type(item) == Tag:
+                if item.name == 'a':
+                    genre_list.append(item.contents[1])
+                elif item.name == 'br':
+                    break
+        
+        anime_info.genre = genre_list
+
+        ### Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ ###
+
+        description_html = jut_su_soup.select_one('#dle-content > div > div > div > p > span')
+        for x in description_html.select('i'):
+            x.decompose()
+        for x in description_html.select('span'):
+            x.decompose()
+        anime_info.description = description_html.text
+
+        return anime_info

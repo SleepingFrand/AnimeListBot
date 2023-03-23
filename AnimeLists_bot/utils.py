@@ -1,7 +1,7 @@
 import json
 
 class Anime:
-    def __init__(self, title : str, genre : str, description : str, episodes : int, watched : int, site : str):
+    def __init__(self, title = '', genre  = list(), description  = '', episodes = 0, watched = 0, site  = ''):
         self.title = title
         self.genre = genre
         self.description = description
@@ -20,6 +20,8 @@ class Anime:
             "site": self.site
         })
 
+    def get_info_to_str(self):
+        return  self.title+'\n'+'Жанры: ' + ', '.join(self.genre) + '\n' + 'Описание: ' + self.description + '\n' + 'Серий: ' + str(self.watched) + '/' + str(self.episodes) + '\n' + 'Сайт: ' + self.site
 
     @classmethod
     def from_json(cls, json_str : str):

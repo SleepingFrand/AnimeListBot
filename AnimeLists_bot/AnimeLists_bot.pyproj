@@ -24,7 +24,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AnimeLists_bot.py" />
     <Compile Include="config.py" />
     <Compile Include="README" />
     <Compile Include="handlers.py" />

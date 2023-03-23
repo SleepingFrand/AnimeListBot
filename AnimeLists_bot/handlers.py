@@ -9,6 +9,8 @@ from site_parser import amine_url_lib
 bot = telebot.TeleBot(API_TOKEN_BOT)
 url = amine_url_lib['jutsu']
 
+anime_info_list = dict[int:Anime]
+
 ############__ВСПОМОГАТЕЛЬНЫЕ_ФУНКЦИИ__#############
 
 # Выбор активного сайта
@@ -30,19 +32,17 @@ def FindAnime(name: str) -> list[str]:
 def NoneFunction(message):
     bot.reply_to(message, 'Прости, но пока я не могу отвечать на это, но совсем скоро научусь!')
 
-#
-def CallBack_type(data:str,type_name:str):
-    data = json.loads(data)
-    return data['head'] == type_name
-
 ####################################################
 
 # обрабатываем только CallbackQuery с данными, начинающимися на "Ссылка:"
-@bot.callback_query_handler(func=lambda call: CallBack_type(call.data, 'url-find'))
+@bot.callback_query_handler(func=lambda call: json.loads(call.data)['head'] == 'url-find')
 def start_callback(call):
     data = json.loads(call.data)
+
+    anime_info = jutsu.info_per_url(data['url'])
+
     bot.delete_message(call.message.chat.id, call.message.message_id)
-    bot.send_message(call.from_user.id, "jut.su" + data['url'])
+    bot.send_message(call.from_user.id, anime_info.get_info_to_str())
 
 ####################################################
 
