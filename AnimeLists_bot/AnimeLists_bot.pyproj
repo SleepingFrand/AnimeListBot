@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>5c8c9370-4f51-4cef-93fd-fbfc422b4ccc</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>AnimeLists_bot.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,16 +25,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AnimeLists_bot.py" />
+    <Compile Include="config.py" />
+    <Compile Include="README" />
+    <Compile Include="handlers.py" />
+    <Compile Include="main.py" />
     <Compile Include="site_parser.py" />
+    <Compile Include="utils.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.9" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\help.txt" />
+    <Content Include="Files\start.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Files\" />
+    <Folder Include="data\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

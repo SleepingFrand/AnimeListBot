@@ -52,9 +52,3 @@ class jutsu(object):
         
 
         return anime_list
-    
-
-
-
-
-

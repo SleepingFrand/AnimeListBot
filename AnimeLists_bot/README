@@ -1,0 +1,32 @@
+﻿├── main.py
+│   ├── main - Запуск бота
+│   ├── start - Начало общения с ботом
+│   ├── help - Помощь по использованию бота
+│   └── message_handler - Обработчик входящих сообщений
+├── config.py
+│   ├── API_TOKEN - API токен бота
+│   └── ADMIN_ID - ID администратора бота
+├── handlers.py
+│   ├── commands - Определение команд для бота
+│   ├── inline - Обработка инлайн-запросов
+│   ├── messages - Определение ответов на сообщения
+│   └── errors - Обработка ошибок при выполнении команд
+├── utils.py
+│   ├── database - Взаимодействие с базой данных
+│   ├── logging - Логгирование выполнения действий бота
+│   ├── wrap_callbacks - Обертка для callback-функций
+│   ├── throttling - Ограничение количества действий пользователей
+│   └── validators - Проверки введенных пользователем данных
+└── data
+    ├── 12345.json
+    │   # Пример содержимого файла:
+    │   # {
+    │   #     "title": "Attack on Titan",
+    │   #     "genre": "Action, Drama, Fantasy, Military, Mystery",
+    │   #     "description": "Several hundred years ago, humans were nearly exterminated by titans.",
+    │   #     "episodes": 25,
+    │   #     "watched": 13,
+    │   #     "site": "Crunchyroll"
+    │   # }
+    ├── 56789.json
+    └── ...
