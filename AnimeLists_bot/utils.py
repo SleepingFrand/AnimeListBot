@@ -54,22 +54,4 @@ def FileToAnimeList(user_chat_id : int) -> list(Anime):
     json_str = database.load_user_data(str(user_chat_id))
     return [Anime.from_json(item) for item in json_str.split('|') if item]
 
-Anime_data = dict[int:list(Anime)]
-
-def GetListFromData(user_chat_id : int) -> list(Anime):
-    global Anime_data
-
-    if user_chat_id not in Anime_data.keys:
-        Anime_data[user_chat_id] = FileToAnimeList(user_chat_id)
-    return Anime_data[user_chat_id]
-
-def SaveUserData(user_chat_id : int):
-    global Anime_data
-
-    if user_chat_id not in Anime_data.keys:
-        return
-    AnimeListToFile(user_chat_id, Anime_data[user_chat_id])
-    del Anime_data[user_chat_id]
-
-
 
