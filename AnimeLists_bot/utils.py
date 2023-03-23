@@ -9,7 +9,7 @@ class Anime:
         self.watched = watched
         self.site = site
 
-    # Конвертация объекта Anime в JSON
+    # пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Anime пїЅ JSON
     def to_json(self):
         return json.dumps({
             "title": self.title,
@@ -20,20 +20,20 @@ class Anime:
             "site": self.site
         })
 
-    # Создание объекта Anime из JSON
+    # пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Anime пїЅпїЅ JSON
     @classmethod
     def from_json(cls, json_str : str):
         json_dict = json.loads(json_str)
         return cls(title=json_dict['title'], genre=json_dict['genre'], description=json_dict['description'], episodes=json_dict['episodes'], watched=json_dict['watched'], site=json_dict['site'])
 
 class database(object):
-    # Функция сохранения данных пользователя
+    # пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     @classmethod
     def save_user_data(cls, user_chat_id : str, anime_info : str):
         with open(f'data/{user_chat_id}.json', 'w') as f:
             f.write(anime_info)
     
-    # Функция чтения данных пользователя  
+    # пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ  
     @classmethod 
     def load_user_data(cls, user_chat_id : str):
         try:
