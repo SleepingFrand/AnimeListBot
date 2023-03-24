@@ -42,7 +42,7 @@ class database(object):
             with open(f'data/{user_chat_id}.json', 'r') as f:
                 return f.read()
         except FileNotFoundError:
-            return {}
+            return None
 
 def AnimeListToFile(user_chat_id : int, animelist : list[Anime]):
     if not animelist:
@@ -54,21 +54,23 @@ def AnimeListToFile(user_chat_id : int, animelist : list[Anime]):
 
 def FileToAnimeList(user_chat_id : int) -> list[Anime]:
     json_str = database.load_user_data(str(user_chat_id))
-    return [Anime.from_json(item) for item in json_str.split('|') if item]
+    if json_str != None:
+        return [Anime.from_json(item) for item in json_str.split('|') if item]
+    return []
 
-Anime_data = dict[int:list[Anime]]
+Anime_data:dict[int, list[Anime]] = {}
 
 def GetListFromData(user_chat_id : int) -> list[Anime]:
     global Anime_data
 
-    if user_chat_id not in Anime_data.keys:
+    if user_chat_id not in Anime_data:
         Anime_data[user_chat_id] = FileToAnimeList(user_chat_id)
     return Anime_data[user_chat_id]
 
 def SaveUserData(user_chat_id : int):
     global Anime_data
 
-    if user_chat_id not in Anime_data.keys:
+    if user_chat_id not in Anime_data:
         return
     AnimeListToFile(user_chat_id, Anime_data[user_chat_id])
     del Anime_data[user_chat_id]
