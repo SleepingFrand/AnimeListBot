@@ -1,6 +1,8 @@
 stages:
   - build
   - deploy
+  - reset
+  - waiting_start
 
 variables:
   DOCKER_REPO: anlis
@@ -33,14 +35,14 @@ install_local_helm_chart:
 
 # Удаление ReplicaSet, если он есть
 delete_existing_replicaset:
-  stage: deploy
+  stage: reset
   image: bitnami/kubectl:1.22
   script:
     - kubectl -n $APP_NAMESPACE delete replicasets -l app=$APP_LABLE
 
 # Ожидание поднятия пода со статусом готов
 wait_for_pod_ready:
-  stage: deploy
+  stage: waiting_start
   image: bitnami/kubectl:1.22
   script:
     - kubectl -n $APP_NAMESPACE wait --for=condition=Ready pod -l app=$APP_LABLE --timeout=300s
