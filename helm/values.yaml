@@ -3,7 +3,7 @@ namespace: telegram-bot
 pvc:
   name: animelist-pvc
   accessModes: ReadWriteOnce
-  storage: 5Gi
+  storage: 2Gi
   storageClassName: longhorn
 
 deployment:
