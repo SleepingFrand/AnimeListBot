@@ -1,5 +1,4 @@
-﻿from ast import Return
-import requests
+﻿import requests
 from bs4 import BeautifulSoup  as BS
 from bs4 import Tag, NavigableString
 from utils import Anime

@@ -1,4 +1,6 @@
-API_TOKEN_BOT = '6269409208:AAGGRTV5V6kCYxih2tXM8RYDp1MRMu7ZQmY'
+from os import environ as env
+
+API_TOKEN_BOT = env.get('BOT_TOKEN')
 
 # —читываем файл с помощью -> /help
 file_start = open('Files/start.txt', 'r', encoding="utf-8")
