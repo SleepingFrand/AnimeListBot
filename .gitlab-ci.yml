@@ -7,7 +7,7 @@ stages:
 variables:
   DOCKER_REPO: anlis
   DOCKER_REGISTRY: "sleepingfrand/"
-  APP_NAME: AL-telegram-bot
+  APP_NAME: al-telegram-bot
   APP_NAMESPACE: telegram-bot
   APP_LABLE: animelist-app
 
