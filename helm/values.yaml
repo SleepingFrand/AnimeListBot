@@ -1,0 +1,22 @@
+namespace: telegram-bot
+
+pvc:
+  name: animelist-pvc
+  accessModes: ReadWriteOnce
+  storage: 5Gi
+  storageClassName: longhorn
+
+deployment:
+  name: animelist-deployment
+  replicas: 1
+  selector:
+    matchLabels:
+      app: animelist-app
+  container:
+    name: animelist-container
+    image: sleepingfrand/anlis:latest
+    imagePullPolicy: Always
+  volumes:
+    name: animelist-volume
+    mountPath: /app/data
+

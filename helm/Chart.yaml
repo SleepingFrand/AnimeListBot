@@ -1,0 +1,4 @@
+apiVersion: v2
+name: animelist
+description: A Helm chart for deploying animelist app in a namespace
+version: 0.1.0
