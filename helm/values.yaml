@@ -5,7 +5,6 @@ pvc:
   accessModes: ReadWriteOnce
   storage: 5Gi
   storageClassName: longhorn
-  snap: "false"
 
 deployment:
   name: animelist-deployment
