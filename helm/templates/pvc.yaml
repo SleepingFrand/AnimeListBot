@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.pvc.name }}
   namespace: {{ .Values.namespace }}
+  annotations:
+    longhorn.io/snap: {{ .Values.pvc.snap }}
 spec:
   accessModes:
     - {{ .Values.pvc.accessModes }}
