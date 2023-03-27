@@ -16,7 +16,7 @@ build:
   services:
     - docker:dind
   script:
-    - docker build -t ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA .
+    - docker build -t ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA ./AnimeLists_bot
     - docker tag ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA ${DOCKER_REGISTRY}${DOCKER_REPO}:latest
     - echo "$DOCKER_PASSWORD" | docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
     - docker push ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA
