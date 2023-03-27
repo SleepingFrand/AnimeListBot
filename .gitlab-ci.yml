@@ -1,23 +1,46 @@
 stages:
-  - push
-  - install
+  - build
+  - deploy
 
 variables:
-  IMAGE_TAG: sleepingfrand/anlis:$CI_COMMIT_REF_SLUG
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_REPO: anlis
+  DOCKER_REGISTRY: "sleepingfrand/"
+  APP_NAME: AL-telegram-bot
+  APP_NAMESPACE: telegram-bot
+  APP_LABLE: animelist-app
 
-build-push-docker-image-job:
-  stage: push
+# Сборка и пуш docker image в Docker Hub
+build:
   image: docker:latest
+  stage: build
   services:
     - docker:dind
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-    - docker build -t $IMAGE_TAG ./AnimeLists_bot/
-    - docker push $IMAGE_TAG
+    - docker build -t ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA .
+    - docker tag ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA ${DOCKER_REGISTRY}${DOCKER_REPO}:latest
+    - echo "$DOCKER_PASSWORD" | docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker push ${DOCKER_REGISTRY}${DOCKER_REPO}:$CI_COMMIT_SHA
+    - docker push ${DOCKER_REGISTRY}${DOCKER_REPO}:latest
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master"
 
-install-job:
-  stage: install
-  image: bitnami/kubectl:latest
+# Установка локального helm chart
+install_local_helm_chart:
+  stage: deploy
+  image: alpine/helm:3.5.3
   script:
-    - kubectl -n telegram-bot delete replicasets -l app=animelist-app
+    - helm upgrade -i $APP_NAME ./helm --set telegram.token=$TELEGRAM_BOT_TOKEN, namespace=$APP_NAMESPACE, deployment.selector.matchLabels.app=$APP_LABLE, deployment.container.image=${DOCKER_REGISTRY}${DOCKER_REPO}:latest
+
+# Удаление ReplicaSet, если он есть
+delete_existing_replicaset:
+  stage: deploy
+  image: bitnami/kubectl:1.22
+  script:
+    - kubectl -n $APP_NAMESPACE delete replicasets -l app=$APP_LABLE
+
+# Ожидание поднятия пода со статусом готов
+wait_for_pod_ready:
+  stage: deploy
+  image: bitnami/kubectl:1.22
+  script:
+    - kubectl -n $APP_NAMESPACE wait --for=condition=Ready pod -l app=$APP_LABLE --timeout=300s
