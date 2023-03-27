@@ -31,7 +31,7 @@ install_local_helm_chart:
   stage: deploy
   image: alpine/helm:3.5.3
   script:
-    - helm upgrade -i $APP_NAME --namespace $APP_NAMESPACE --create-namespace ./helm --set telegram.token=$TELEGRAM_BOT_TOKEN,namespace=$APP_NAMESPACE,deployment.selector.matchLabels.app=$APP_LABLE,deployment.container.image=${DOCKER_REGISTRY}${DOCKER_REPO}:latest
+    - helm upgrade -i $APP_NAME ./helm  --namespace $APP_NAMESPACE --create-namespace --set telegram.token=$TELEGRAM_BOT_TOKEN,namespace=$APP_NAMESPACE,deployment.selector.matchLabels.app=$APP_LABLE,deployment.container.image=${DOCKER_REGISTRY}${DOCKER_REPO}:latest
 
 # Удаление ReplicaSet, если он есть
 delete_existing_replicaset:
