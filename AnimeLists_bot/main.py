@@ -2,6 +2,7 @@ from handlers import handlers, bot, last_interaction_time, time
 from utils import SaveUserData
 import threading
 
+# Просматривает пользователей и переносит в память тех, кто долго не пишет
 def time_cheak():
     while 1:
         for i, t in last_interaction_time.items():

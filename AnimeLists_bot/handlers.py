@@ -13,7 +13,7 @@ url = amine_url_lib['jutsu']
 anime_info:dict[int, Anime] = {}
 last_interaction_time:dict[int, float] = {}
 
-############__ВСПОМОГАТЕЛЬНЫЕ_ФУНКЦИИ__#############
+##################################################
 
 # Выбор активного сайта
 def ChooseAnimeSite():
@@ -34,9 +34,18 @@ def FindAnime(name: str) -> list[str]:
 def NoneFunction(message):
     bot.reply_to(message, 'Прости, но пока я не могу отвечать на это, но совсем скоро научусь!')
 
+def UpdateTime(id):
+    global last_interaction_time
+    # обновляем время последнего общения при получении каждого нового сообщения
+    last_interaction_time[id] = time.time()
+
 ####################################################
 
+# 
 def find_callback_back(chat_id, url):
+    """
+    Формирует основное информативное сообщение с информацией по аниме 
+    """
     global Anime_data
     global anime_info
 
@@ -69,6 +78,7 @@ def find_callback_back(chat_id, url):
 
     bot.send_message(chat_id, anime_info[chat_id].get_info_to_str(), reply_markup = markup)
 
+#
 def send_list(message, page=1):
     """
     Отправит пользователю сообщение с клавиатурой, содержащей список elements.
@@ -107,12 +117,16 @@ def send_list(message, page=1):
     # Отправка сообщения с клавиатурой
     bot.send_message(message.chat.id, "Список контента:", reply_markup=keyboard)
 
+#############################################################
+
+#
 @bot.callback_query_handler(func=lambda call: call.data.startswith('prev-page_') or call.data.startswith('next-page_') or call.data.startswith('item_'))
 def handle_callback_query(call):
     """
     Обрабатывает callback_query, отправляя следующую или предыдущую страницу или
     реагирует на выбор пользователя.
     """
+    UpdateTime(call.message.chat.id)
     global Anime_data
 
     # Отделяем префикс и аргументы из callback_data
@@ -137,20 +151,25 @@ def handle_callback_query(call):
         anime_info[call.message.chat.id] = jutsu.info_per_url(argument)
         find_callback_back(call.message.chat.id, argument)
 
-# обрабатываем только CallbackQuery с данными, начинающимися на "Ссылка:"
+# обрабатываем только CallbackQuery с данными 'head':'url-find'
 @bot.callback_query_handler(func=lambda call: json.loads(call.data)['head'] == 'url-find')
 def find_callback(call):
+    UpdateTime(call.message.chat.id)
     global Anime_data
     global anime_info
     data = json.loads(call.data)
     anime_info[call.message.chat.id] = jutsu.info_per_url(data['url'])
-
+    # Удаляем сообщение и отправляем другое
     bot.delete_message(call.message.chat.id, call.message.message_id)
     find_callback_back(call.message.chat.id, data['url'])
 
-
+# обрабатываем только CallbackQuery с данными 'head':'an'
 @bot.callback_query_handler(func=lambda call: json.loads(call.data)['head'] == 'an')
 def anime_callback(call):
+    """
+    Обрабатывает нажатие кнопок в основной инфо панели
+    """
+    UpdateTime(call.message.chat.id)
     global Anime_data
     global anime_info
     data = json.loads(call.data)
@@ -178,32 +197,33 @@ def anime_callback(call):
 
 ####################################################
 
+# Старт комманда
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(chat_id=message.chat.id, text=START_TXT)
     if message.chat.id not in Anime_data:
         Anime_data[message.chat.id] = []
+    UpdateTime(message.chat.id)
 
+# Помощь комманда
 @bot.message_handler(commands=['help'])
 def help(message):
+    UpdateTime(message.chat.id)
     bot.send_message(chat_id=message.chat.id, text=HELP_TXT)
 
 # Обработчик сообщений с текстом
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    global last_interaction_time
-    # обновляем время последнего общения при получении каждого нового сообщения
-    last_interaction_time[message.chat.id] = time.time()
+    UpdateTime(message.chat.id)
 
-    
     GetListFromData(message.chat.id)
 
     anime_list_finded = dict()
     if message.text.lower() == "привет":
         bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
 
-    # Если попросили чтото найти  ->  "Найди ...."
-    elif message.text.lower().split()[0] == 'найди': 
+    # Если попросили чтото найти  ->  "Найди ...." || "Найти ...."
+    elif message.text.lower().split()[0] == 'найди' or message.text.lower().split()[0] == 'найти': 
         anime_list_finded = FindAnime(' '.join(message.text.lower().split()[1:]))
         if len(anime_list_finded) > 0:
             markup = types.InlineKeyboardMarkup()
@@ -211,11 +231,11 @@ def get_text_messages(message):
                 btn = types.InlineKeyboardButton(text=key, callback_data=json.dumps({'head':'url-find','url':vue}))
                 markup.add(btn)
             bot.send_message(message.chat.id, "Вот что я нашел на " + url[8:] + ":", reply_markup = markup)
+    # Если попросили список -> "Список"
     elif message.text.lower().split()[0] == 'список':
         send_list(message)
     else:
         bot.send_message(message.chat.id, "Я тебя не понимаю. Напиши /help.")
 
+# Копируем заголовки для main
 handlers = bot.message_handler
-
-
