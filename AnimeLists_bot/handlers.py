@@ -62,19 +62,19 @@ def find_callback_back(chat_id, url):
 
     if added_list:
         if Anime_data[chat_id][index_list].watched < Anime_data[chat_id][index_list].episodes:
-            markup.add(types.InlineKeyboardButton(text='просмотренно серий + 1', callback_data=json.dumps({'head':'an','v':4, 'id':index_list , 'url':url})))
-            markup.add(types.InlineKeyboardButton(text='Ссылка на серию', callback_data=json.dumps({'head':'an','v':2})))
+            markup.add(types.InlineKeyboardButton(text='просмотренно серий + 1', callback_data=f'info_add-ep_{index_list}_{url}'))
+            markup.add(types.InlineKeyboardButton(text='Ссылка на серию', callback_data=f'info_url_{index_list}'))
         
         if Anime_data[chat_id][index_list].watched > 0:
-            markup.add(types.InlineKeyboardButton(text='просмотренно серий - 1', callback_data=json.dumps({'head':'an','v':5, 'id':index_list , 'url':url})))
+            markup.add(types.InlineKeyboardButton(text='просмотренно серий - 1', callback_data=f'info_pop-ep_{index_list}_{url}'))
         
-        markup.add(types.InlineKeyboardButton(text='Удалить из списока', callback_data=json.dumps({'head':'an','v':3, 'id':index_list})))
+        markup.add(types.InlineKeyboardButton(text='Удалить из списока', callback_data=f'info_pop_{index_list}'))
         
     else:
-        markup.add(types.InlineKeyboardButton(text='Добавить в список', callback_data=json.dumps({'head':'an','v':1, 'url':url})))
-        markup.add(types.InlineKeyboardButton(text='Ссылка на серию', callback_data=json.dumps({'head':'an','v':2})))
+        markup.add(types.InlineKeyboardButton(text='Добавить в список', callback_data=f'info_add_{url}'))
+        markup.add(types.InlineKeyboardButton(text='Ссылка на серию', callback_data=f'info_url_{index_list}'))
 
-    markup.add(types.InlineKeyboardButton(text='Отмена', callback_data=json.dumps({'head':'an','v':-1})))
+    markup.add(types.InlineKeyboardButton(text='Отмена', callback_data='info_cansel'))
 
     bot.send_message(chat_id, anime_info[chat_id].get_info_to_str(), reply_markup = markup)
 
@@ -151,48 +151,56 @@ def handle_callback_query(call):
         anime_info[call.message.chat.id] = jutsu.info_per_url(argument)
         find_callback_back(call.message.chat.id, argument)
 
-# обрабатываем только CallbackQuery с данными 'head':'url-find'
-@bot.callback_query_handler(func=lambda call: json.loads(call.data)['head'] == 'url-find')
+# обрабатываем только CallbackQuery с данными find
+@bot.callback_query_handler(func=lambda call: call.data.startswith('find_'))
 def find_callback(call):
-    UpdateTime(call.message.chat.id)
-    global Anime_data
-    global anime_info
-    data = json.loads(call.data)
-    anime_info[call.message.chat.id] = jutsu.info_per_url(data['url'])
-    # Удаляем сообщение и отправляем другое
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-    find_callback_back(call.message.chat.id, data['url'])
+    try:
+        UpdateTime(call.message.chat.id)
+        global Anime_data
+        global anime_info
+        anime_info[call.message.chat.id] = jutsu.info_per_url(call.data.split('_', 1)[1])
+        # Удаляем сообщение и отправляем другое
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        find_callback_back(call.message.chat.id, call.data.split('_', 1)[1])
+    except Exception as e:
+        print(f'Ошибка в обработке find кнопок:\n{e}')
 
-# обрабатываем только CallbackQuery с данными 'head':'an'
-@bot.callback_query_handler(func=lambda call: json.loads(call.data)['head'] == 'an')
+# обрабатываем только CallbackQuery с данными info
+@bot.callback_query_handler(func=lambda call: call.data.startswith('info_'))
 def anime_callback(call):
     """
     Обрабатывает нажатие кнопок в основной инфо панели
     """
-    UpdateTime(call.message.chat.id)
-    global Anime_data
-    global anime_info
-    data = json.loads(call.data)
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-    if data['v'] == 1:
-        Anime_data[call.message.chat.id].append(anime_info[call.message.chat.id])
-        find_callback_back(call.message.chat.id, data['url'])
-    elif data['v'] == 2:
-        mess = jutsu.get_url_episode(anime_info[call.message.chat.id].site, anime_info[call.message.chat.id].watched + 1)
-        if mess == None:
-            bot.send_message(call.from_user.id, 'Не могу найти серию(')
-        else:
-            bot.send_message(call.from_user.id, mess)
-            Anime_data[call.message.chat.id][data['id']].watched += 1
-    elif data['v'] == 3:
-        Anime_data[call.message.chat.id].pop(data['id'])
-        bot.send_message(call.from_user.id, 'Удалена из списка')
-    elif data['v'] == 4:
-        Anime_data[call.message.chat.id][data['id']].watched += 1
-        find_callback_back(call.message.chat.id, data['url'])
-    elif data['v'] == 5:
-        Anime_data[call.message.chat.id][data['id']].watched -= 1
-        find_callback_back(call.message.chat.id, data['url'])
+    try:
+        UpdateTime(call.message.chat.id)
+        global Anime_data
+        global anime_info
+        data = call.data.split('_', 1)[1]
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+
+        command = data.split('_', 1)[0]
+
+        if command == 'add':
+            Anime_data[call.message.chat.id].append(anime_info[call.message.chat.id])
+            find_callback_back(call.message.chat.id, data.split('_', 1)[1])
+        elif command == 'url':
+            mess = jutsu.get_url_episode(anime_info[call.message.chat.id].site, anime_info[call.message.chat.id].watched + 1)
+            if mess == None:
+                bot.send_message(call.from_user.id, 'Не могу найти серию(')
+            else:
+                bot.send_message(call.from_user.id, mess)
+                Anime_data[call.message.chat.id][int(data.split('_', 1)[1])].watched += 1
+        elif command == 'pop':
+            Anime_data[call.message.chat.id].pop(int(data.split('_', 1)[1]))
+            bot.send_message(call.from_user.id, 'Удалена из списка')
+        elif command == 'add-ep':
+            Anime_data[call.message.chat.id][int(data.split('_')[1])].watched += 1
+            find_callback_back(call.message.chat.id, data.split('_')[2])
+        elif command == 'pop-ep':
+            Anime_data[call.message.chat.id][int(data.split('_')[1])].watched -= 1
+            find_callback_back(call.message.chat.id, data.split('_')[2])
+    except Exception as e:
+        print(f'Ошибка в обработке info кнопок:\n{e}')
     
 
 ####################################################
@@ -227,8 +235,8 @@ def get_text_messages(message):
         anime_list_finded = FindAnime(' '.join(message.text.lower().split()[1:]))
         if len(anime_list_finded) > 0:
             markup = types.InlineKeyboardMarkup()
-            for key, vue in anime_list_finded.items():
-                btn = types.InlineKeyboardButton(text=key, callback_data=json.dumps({'head':'url-find','url':vue}))
+            for key, var in anime_list_finded.items():
+                btn = types.InlineKeyboardButton(text=key, callback_data=f'find_{var}')
                 markup.add(btn)
             bot.send_message(message.chat.id, "Вот что я нашел на " + url[8:] + ":", reply_markup = markup)
     # Если попросили список -> "Список"

@@ -113,36 +113,43 @@ class jutsu(object):
     @classmethod
     def get_url_episode(cls, url:str, eps:int):
         
-        season = 1
-        count_ser = 0;
-        episode = 1
+        season = 2
+        episode = eps
+        revers_serch = False
         while 1:
                 jut_su_eps = requests.post(url + f'episode-{episode}.html', cookies=cls.cookies, headers=cls.headers)
                 soup = BS(jut_su_eps.content, features='lxml')
                 if soup.select_one('#dle-content > div > div.videoContent') == None:
-                    eps -= episode
-                    if eps < 0:
+                    episode -= 1
+                    revers_serch = True
+                    if eps < 1:
                         return None
+                elif revers_serch:
+                    eps -= episode + 1
                     break
-                if eps - episode == 0:
+                if eps == episode:
                     return jut_su_eps.url
 
-                episode += 1
+                episode += 1 - int(revers_serch)
 
         while 1:
-            episode = 1
+            revers_serch = False
+            episode = eps
             while 1:
                 jut_su_eps = requests.post(url + f'season-{season}/episode-{episode}.html', cookies=cls.cookies, headers=cls.headers)
                 soup = BS(jut_su_eps.content, features='lxml')
                 if soup.select_one('#dle-content > div > div.videoContent') == None:
-                    eps -= episode
-                    if eps < 0:
+                    episode -= 1
+                    revers_serch = True
+                    if eps < 1:
                         return None
+                elif revers_serch:
+                    eps -= episode + 1
                     break
-                if eps - episode == 0:
+                if eps == episode:
                     return jut_su_eps.url
 
-                episode += 1
+                episode += 1- int(revers_serch)
 
             season += 1
         
